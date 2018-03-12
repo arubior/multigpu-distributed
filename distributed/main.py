@@ -73,7 +73,7 @@ class Net(nn.Module):
 
 model = torch.nn.DataParallel(Net(), device_ids=[0, 1])
 
-torch.distributed.init_process_group(world_size=2, init_method='tcp://192.168.1.14:23456', rank=0)
+torch.distributed.init_process_group('tcp', init_method='tcp://192.168.1.14:23456', rank=0, world_size=2, group_name='s1arubio')
 net = torch.nn.DistributedDataParallel(model)
 
 if args.cuda:
