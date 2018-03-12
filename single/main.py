@@ -118,6 +118,3 @@ for epoch in range(1, args.epochs + 1):
     epochs_time.append(time.time() - tic)
     test()
 print("Mean epoch time: %.2f secs" % np.mean(epochs_time))
-"BS 1000 - Mean epoch time: 4.27 secs"
-"BS 5000 - Mean epoch time: 3.09 secs"
-"BS 10000 - Mean epoch time: 3.10 secs"

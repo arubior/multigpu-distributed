@@ -70,13 +70,12 @@ class Net(nn.Module):
         # return F.log_softmax(x, dim=1)
         return F.log_softmax(x)
 
-model = Net()
+model = torch.nn.DataParallel(Net(), device_ids=[0, 1])
+
 if args.cuda:
     model.cuda()
 
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
-
-net = torch.nn.DataParallel(model, device_ids=[0, 1])
 
 def train(epoch):
     model.train()
@@ -85,8 +84,7 @@ def train(epoch):
             data, target = data.cuda(), target.cuda()
         data, target = Variable(data), Variable(target)
         optimizer.zero_grad()
-        # output = model(data)
-        output = net(data)
+        output = model(data)
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
@@ -121,6 +119,3 @@ for epoch in range(1, args.epochs + 1):
     epochs_time.append(time.time() - tic)
     test()
 print("Mean epoch time: %.2f secs" % np.mean(epochs_time))
-"BS 1000 - Mean epoch time: 6.50 secs"
-"BS 5000 - Mean epoch time: 3.29 secs"
-"BS 10000 - Mean epoch time: 3.24 secs"
