@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import torch.distributed as dist
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 
@@ -71,6 +72,9 @@ class Net(nn.Module):
         return F.log_softmax(x)
 
 model = torch.nn.DataParallel(Net(), device_ids=[0, 1])
+
+torch.distributed.init_process_group(world_size=2, init_method='tcp://192.168.1.14:23456', rank=0)
+net = torch.nn.DistributedDataParallel(model)
 
 if args.cuda:
     model.cuda()
