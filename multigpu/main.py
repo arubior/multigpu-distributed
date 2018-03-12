@@ -1,4 +1,6 @@
 from __future__ import print_function
+import time
+import numpy as np
 import argparse
 import torch
 import torch.nn as nn
@@ -65,7 +67,8 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        # return F.log_softmax(x, dim=1)
+        return F.log_softmax(x)
 
 model = Net()
 if args.cuda:
@@ -111,6 +114,13 @@ def test():
         100. * correct / len(test_loader.dataset)))
 
 
+epochs_time = []
 for epoch in range(1, args.epochs + 1):
+    tic = time.time()
     train(epoch)
+    epochs_time.append(time.time() - tic)
     test()
+print("Mean epoch time: %.2f secs" % np.mean(epochs_time))
+"BS 1000 - Mean epoch time: 6.50 secs"
+"BS 5000 - Mean epoch time: 3.29 secs"
+"BS 10000 - Mean epoch time: 3.24 secs"
