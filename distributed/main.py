@@ -71,10 +71,12 @@ class Net(nn.Module):
         # return F.log_softmax(x, dim=1)
         return F.log_softmax(x)
 
-model = torch.nn.DataParallel(Net(), device_ids=[0, 1])
+dist.init_process_group('gloo', init_method='tcp://192.168.1.18:23456', rank=1, world_size=2)
 
-torch.distributed.init_process_group('tcp', init_method='tcp://192.168.1.14:23456', rank=0, world_size=2, group_name='s1arubio')
-net = torch.nn.DistributedDataParallel(model)
+print("Rank:", dist.get_rank())
+print("World size:", dist.get_world_size())
+
+model = torch.nn.parallel.DistributedDataParallel(Net())  #, device_ids=[0])
 
 if args.cuda:
     model.cuda()
